@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import requests
+import urllib3  # 新增這行
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning) # 新增這行：用來隱藏不安全連線的警告提示
 import datetime
 import time
 from collections import Counter
@@ -232,7 +234,7 @@ def fetch_lotto_data(year, month):
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
     
     try:
-        response = requests.get(url, headers=headers, timeout=10)
+        response = requests.get(url, headers=headers, timeout=10, verify=False)
         data = response.json()
         
         monthly_draws = []
