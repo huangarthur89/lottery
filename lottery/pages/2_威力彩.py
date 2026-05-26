@@ -9,6 +9,52 @@ from collections import Counter
 import sqlite3
 import random
 
+# ==========================================
+# 🔮 新增：生辰八字五行核心演算引擎
+# ==========================================
+
+D_STEMS = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"]
+D_BRANCHES = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"]
+
+D_STEM_ELEMENTS = {
+    "甲": "木", "乙": "木", "丙": "火", "丁": "火", "戊": "土",
+    "己": "土", "庚": "金", "辛": "金", "壬": "水", "癸": "水"
+}
+D_BRANCH_ELEMENTS = {
+    "寅": "木", "卯": "木", "巳": "火", "午": "火", 
+    "申": "金", "酉": "金", "子": "水", "亥": "水", 
+    "辰": "土", "戌": "土", "丑": "土", "未": "土"
+}
+D_ELEMENT_NUMS = {
+    "水": [1, 6], "火": [2, 7], "木": [3, 8], "金": [4, 9], "土": [5, 0]
+}
+
+def calculate_bazi_lucky_nums(birth_date, birth_hour_str, pool_size=49):
+    """根據出生日期與時辰，計算出符合五行磁場的開運號碼池"""
+    base_date = datetime.date(1900, 1, 1)
+    delta_days = (birth_date - base_date).days
+    
+    stem_idx = (0 + delta_days) % 10
+    branch_idx = (10 + delta_days) % 12
+    
+    day_stem = D_STEMS[stem_idx]
+    day_branch = D_BRANCHES[branch_idx]
+    hour_branch = birth_hour_str[0]
+    
+    day_element = D_STEM_ELEMENTS[day_stem]
+    hour_element = D_BRANCH_ELEMENTS[hour_branch]
+    
+    # 抓出日主與時辰對應的所有尾數號碼
+    lucky_tails = list(set(D_ELEMENT_NUMS[day_element] + D_ELEMENT_NUMS[hour_element]))
+    
+    lucky_pool = []
+    for n in range(1, pool_size + 1):
+        if n % 10 in lucky_tails or (n % 10 == 0 and 0 in lucky_tails):
+            lucky_pool.append(n)
+            
+    return lucky_pool, f"{day_stem}{day_branch}日（{day_element}命）｜ {hour_branch}時（屬{hour_element}）"
+# ==========================================
+
 
 # --- 進階專家策略函數 ---
 def strategy_max_omission(df, pool_size=49):
@@ -238,8 +284,8 @@ def fetch_super_lotto_data(year, month):
         data = response.json()
         
         monthly_draws = []
-        if 'content' in data and data['content'] and 'super_superLotto638Res' in data['content']:
-            for item in data['content']['super_superLotto638Res']:
+        if 'content' in data and data['content'] and 'superLotto638Res' in data['content']:
+            for item in data['content']['superLotto638Res']:
                 draw_no = item['period']
                 date_str = item['lotteryDate'].split('T')[0]
                 date_parts = date_str.split('-')
@@ -513,79 +559,138 @@ if not full_df.empty:
             st.rerun()
         
         # --- 首頁版 AI 微調推薦 ---
-        st.markdown("### 💡 自選號碼 AI 微調推薦")
-        top_check_nums_str = st.text_input("輸入您的 6 個心水號碼，AI 幫您微調：", "2, 4, 7, 9, 11, 30", key="top_health_check_input")
-        if st.button("✨ 產生微調推薦", key="top_health_check_btn"):
+        st.markdown("### 🎯 自選號碼 AI 五行微調推薦")
+        st.markdown("您可以輸入自己挑選的號碼，AI 將結合歷史大數據與您的生辰八字進行磁場微調：")
+        
+        # 讓使用者輸入自選號碼
+        user_input_str = st.text_input("請選擇 1~6 個您的心水號碼 (用逗號隔開)：", "2, 4, 7, 9, 11, 30")
+        
+        # ✨ 核心亮點：加入生辰八字微調開關
+        use_bazi = st.checkbox("🔮 引入個人生辰八字（五行磁場加權驗證）")
+        
+        bazi_lucky_pool = []
+        bazi_info_str = ""
+        
+        if use_bazi:
+            b_col1, b_col2 = st.columns(2)
+            with b_col1:
+                b_date = st.date_input("出生公曆日期：", value=datetime.date(1990, 1, 1), min_value=datetime.date(1900, 1, 1), max_value=datetime.date.today())
+            with b_col2:
+                b_hour = st.selectbox("出生時辰：", ["子時 (23-01)", "丑時 (01-03)", "寅時 (03-05)", "卯時 (05-07)", "辰時 (07-09)", "巳時 (09-11)", "午時 (11-13)", "未時 (13-15)", "申時 (15-17)", "酉時 (17-19)", "戌時 (19-21)", "亥時 (21-23)"])
+            
+            # 算出生辰五行開運號碼池
+            bazi_lucky_pool, bazi_info_str = calculate_bazi_lucky_nums(b_date, b_hour, pool_size=49)
+            st.caption(f"🧬 解析成功：您的本命為 **{bazi_info_str}**")
+
+        if st.button("🚀 開始 AI 智慧微調分析"):
+            user_input_nums = []
+            if user_input_str.strip():
+                try:
+                    user_input_nums = sorted(list(set([int(x.strip()) for x in user_input_str.split(',') if x.strip()])))
+                except ValueError:
+                    st.error("⚠️ 號碼格式錯誤，請確定都是數字並用逗號隔開 (例如: 2, 4, 7)")
+                    st.stop()
+                    
+            if len(user_input_nums) > 6 or not all(1 <= x <= 38 for x in user_input_nums):
+                st.error("⚠️ 請確保最多輸入 6 個號碼，且都在 1~49 之間喔！")
+                st.stop()
+
+            if not user_input_nums:
+                st.info("您沒有選擇基礎號碼，系統將完全由 AI 與五行大數據為您全自動生成！")
+                user_input_nums = []
+                
+            # 1. 取得大數據頻率 (做為評分依據)
             try:
-                check_nums = sorted(list(set([int(x.strip()) for x in top_check_nums_str.split(',')])))
-                if len(check_nums) != 6 or not all(1 <= x <= 38 for x in check_nums):
-                    st.warning("請確保輸入的是『剛好 6 個』且『介於 1~49 之間』的不重複號碼喔！")
+                conn = sqlite3.connect('lottery_data.db')
+                df_hist = pd.read_sql('SELECT * FROM super_lotto ORDER BY 期別 DESC', conn)
+                conn.close()
+                all_hist_nums = df_hist[['N1', 'N2', 'N3', 'N4', 'N5', 'N6']].values.flatten()
+                freq_map = Counter(all_hist_nums)
+            except:
+                freq_map = {n: random.randint(1, 100) for n in range(1, 39)}
+
+            # 2. AI 診斷：評估使用者的號碼
+            user_scores = {}
+            for n in user_input_nums:
+                score = freq_map.get(n, 0)
+                if use_bazi and bazi_lucky_pool and n in bazi_lucky_pool:
+                    score += 1000  # 🌟 八字相符給予絕對高分加權
+                user_scores[n] = score
+
+            # 依照分數高低排序使用者的號碼 (由強到弱)
+            sorted_user_nums = sorted(user_scores.keys(), key=lambda x: user_scores[x], reverse=True)
+
+            # 3. 觸發「微調突變」機制 (汰弱留強)
+            kept_nums = sorted_user_nums
+            dropped_nums = []
+            
+            # 如果使用者選滿了 6 個，AI 強制替換最弱的 1~2 個；選 5 個則替換最弱的 1 個
+            if len(sorted_user_nums) == 6:
+                keep_len = random.choice([4, 5]) 
+                kept_nums = sorted_user_nums[:keep_len]
+                dropped_nums = sorted_user_nums[keep_len:]
+            elif len(sorted_user_nums) == 5:
+                keep_len = 4
+                kept_nums = sorted_user_nums[:keep_len]
+                dropped_nums = sorted_user_nums[keep_len:]
+
+            final_base = list(kept_nums)
+
+            # 4. 決定 AI 補號的候選池
+            if use_bazi and bazi_lucky_pool:
+                # 八字開啟：優先從符合八字五行、且歷史開出次數多的號碼中挑選
+                candidate_pool = [n for n in bazi_lucky_pool if n not in final_base]
+                candidate_pool = sorted(candidate_pool, key=lambda x: freq_map.get(x, 0), reverse=True)
+            else:
+                # 八字未開啟：單純以歷史大熱門做填補
+                candidate_pool = [n for n, c in Counter(all_hist_nums).most_common(38) if n not in final_base]
+
+            # 5. 補足 6 顆球 (注入 AI 強勢號碼)
+            ai_added_nums = []
+            while len(final_base) < 6:
+                if candidate_pool:
+                    new_num = candidate_pool.pop(0)
+                    final_base.append(new_num)
+                    ai_added_nums.append(new_num)
                 else:
-                    sum_val = sum(check_nums)
-                    all_nums_flat_top = full_df[['N1', 'N2', 'N3', 'N4', 'N5', 'N6']].values.flatten()
-                    freq_top = Counter(all_nums_flat_top)
-                    
-                    gaps_top = {n: -1 for n in check_nums}
-                    for n in check_nums:
-                        for idx, row in full_df.iterrows():
-                            if n in [row['N1'], row['N2'], row['N3'], row['N4'], row['N5'], row['N6']]:
-                                gaps_top[n] = idx
-                                break
-                    
-                    high_gap_nums_top = [n for n in check_nums if gaps_top[n] >= 15]
-                    hot_nums_pool_top = [n for n, c in freq_top.most_common(20)]
-                    
-                    rec_nums = set(check_nums)
-                    changed_nums = set()
-                    
-                    removable = [n for n in check_nums if n not in high_gap_nums_top]
-                    
-                    # 微調邏輯：替換 1 顆極端偏差號碼
-                    if sum_val < 120 and removable:
-                        removable.sort()
-                        rec_nums.remove(removable[0])
-                    elif sum_val > 180 and removable:
-                        removable.sort()
-                        rec_nums.remove(removable[-1])
-                    elif removable:
-                        rec_nums.remove(random.choice(removable))
-                        
-                    available_pool = [n for n in range(1, 39) if n not in rec_nums]
-                    
-                    while len(rec_nums) < 6:
-                        current_sum = sum(rec_nums)
-                        needed = 6 - len(rec_nums)
-                        avg_needed = (117 - current_sum) / needed if needed > 0 else 19
-                        
-                        best_candidate = None
-                        best_diff = 999
-                        random.shuffle(available_pool)
-                        for cand in available_pool:
-                            diff = abs(cand - avg_needed)
-                            if cand in hot_nums_pool_top: diff -= 5
-                            if diff < best_diff:
-                                best_diff = diff
-                                best_candidate = cand
-                                
-                        if not best_candidate: best_candidate = available_pool[0]
-                        rec_nums.add(best_candidate)
-                        changed_nums.add(best_candidate)
-                        available_pool.remove(best_candidate)
-                        
-                    rec_list = sorted(list(rec_nums))
-                    
-                    st.info("AI 已替換偏差號碼，為您重新平衡了**和值**與**奇偶比**：")
-                    def format_num(n):
-                        return f"<span style='color:#FF4B4B; font-weight:bold; font-size: 18px;'>{str(n).zfill(2)}</span>" if n in changed_nums else f"<span style='font-size: 18px;'>{str(n).zfill(2)}</span>"
-                        
-                    orig_str = "、".join([f"<span style='font-size: 18px;'>{str(n).zfill(2)}</span>" for n in check_nums])
-                    rec_str = "、".join([format_num(n) for n in rec_list])
-                    
-                    st.markdown(f"👨‍🏫 **您的原始號碼**： {orig_str}", unsafe_allow_html=True)
-                    st.markdown(f"🤖 **AI 推薦微調**： {rec_str}", unsafe_allow_html=True)
-                    
-            except Exception as e:
-                st.error("解析發生錯誤，請檢查號碼格式。")
+                    r_n = random.randint(1, 38)
+                    if r_n not in final_base:
+                        final_base.append(r_n)
+                        ai_added_nums.append(r_n)
+
+            final_base = sorted(final_base)
+            
+            # 6. 特別號生成邏輯
+            if use_bazi and bazi_lucky_pool:
+                # 威力彩特別號優先從五行池挑選
+                special_num = random.choice([n for n in bazi_lucky_pool if n <= 8] or [random.randint(1, 8)]) 
+            else:
+                special_num = random.choice([n for n, c in Counter(df_hist['特別號']).most_common(5)]) if 'df_hist' in locals() and not df_hist.empty else random.randint(1, 8)
+
+            # ==========================================
+            # 輸出美化與 AI 診斷報告
+            # ==========================================
+            st.success("🎯 AI 運算與磁場優化完成！")
+            
+            # 顯示詳細的診斷報告
+            if dropped_nums:
+                drop_str = "、".join([str(n).zfill(2) for n in sorted(dropped_nums)])
+                add_str = "、".join([str(n).zfill(2) for n in sorted(ai_added_nums)])
+                st.warning(f"🛠️ **AI 汰弱留強**：您選擇的 `{drop_str}` 近期動能較弱或與五行相剋，AI 已將其剔除，替換為強勢號碼 `{add_str}`。")
+            elif ai_added_nums and user_input_nums:
+                add_str = "、".join([str(n).zfill(2) for n in sorted(ai_added_nums)])
+                st.info(f"✨ **AI 智能補牌**：保留了您的優質選號，並為您補齊強勢號碼 `{add_str}`！")
+                
+            def format_ball(n):
+                return f"<span style='font-size: 20px; font-weight:bold; background-color:#F0F2F6; padding: 4px 10px; border-radius: 50%; margin-right: 5px;'>{str(n).zfill(2)}</span>"
+            def format_sp_ball(n):
+                return f"<span style='color:#FFFFFF; font-size: 20px; font-weight:bold; background-color:#FF4B4B; padding: 4px 10px; border-radius: 50%; margin-right: 5px;'>{str(n).zfill(2)}</span>"
+            
+            balls_html = "".join([format_ball(n) for n in final_base])
+            st.markdown(f"**最終優化組合**： {balls_html} ➕ 特別號： {format_sp_ball(special_num)}", unsafe_allow_html=True)
+            
+            if use_bazi:
+                st.info(f"💡 **AI 磁場微調簡評**：本組號碼已強制注入您的 **{bazi_info_str.split('｜')[0]}** 開運尾數，成功提升該組合與您個人的先天運勢共振契合度！")
                 
         # --- 首頁版 夢境解碼 ---
         st.markdown("### 🌙 夢境解碼預測 (逼牌專區)")

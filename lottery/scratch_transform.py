@@ -6,9 +6,9 @@ with open('pages/2_威力彩.py', 'r', encoding='utf-8') as f:
 # basic replacements
 content = content.replace('阿舍的大樂透分析工具', '阿舍的威力彩分析工具')
 content = content.replace('大樂透歷史數據自動化查詢系統', '威力彩歷史數據自動化查詢系統')
-content = content.replace('lotto', 'super_lotto')
 content = content.replace('Lotto649Result', 'SuperLotto638Result')
 content = content.replace('lotto649Res', 'superLotto638Res')
+content = content.replace('lotto', 'super_lotto')
 content = content.replace('大樂透', '威力彩')
 
 # Restore DB name
@@ -22,7 +22,8 @@ content = content.replace('random.randint(1, 49)', 'random.randint(1, 38)')
 content = content.replace('most_common(49)', 'most_common(38)')
 content = content.replace('len(found_numbers) == 49', 'len(found_numbers) == 38')
 content = content.replace('len(found_special) == 49', 'len(found_special) == 8')
-
+content = content.replace("else random.randint(1, 38)", "else random.randint(1, 8)")
+content = content.replace("random.choice([n for n in bazi_lucky_pool])", "random.choice([n for n in bazi_lucky_pool if n <= 8] or [random.randint(1, 8)])")
 # Special Number bound changes
 content = content.replace('spec_counts = {n: 0 for n in range(1, 39)}', 'spec_counts = {n: 0 for n in range(1, 9)}')
 content = content.replace('mix_sp = random.randint(1, 38)', 'mix_sp = random.randint(1, 8)')
