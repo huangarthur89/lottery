@@ -28,12 +28,15 @@ content = content.replace('spec_counts = {n: 0 for n in range(1, 39)}', 'spec_co
 content = content.replace('mix_sp = random.randint(1, 38)', 'mix_sp = random.randint(1, 8)')
 content = content.replace('rand_sp = random.randint(1, 38)', 'rand_sp = random.randint(1, 8)')
 content = content.replace('special_missing = {n: 0 for n in range(1, 39)}', 'special_missing = {n: 0 for n in range(1, 9)}')
+content = content.replace('list(range(1, 39)) # Fallback', 'list(range(1, 9)) # Fallback')
+content = content.replace('or list(range(1, 39))', 'or list(range(1, 9))')
 
 # For average logic
 content = content.replace('(150 - current_sum)', '(117 - current_sum)')
 content = content.replace('靠近 150', '靠近 117')
 content = content.replace('約為 150', '約為 117')
 content = content.replace('120~180', '95~139')
+content = content.replace('else 25', 'else 19')
 
 # Backtesting ticket price
 content = content.replace('value=50, disabled=True', 'value=100, disabled=True')

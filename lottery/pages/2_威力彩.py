@@ -67,7 +67,7 @@ def strategy_pattern_combo(df, pool_size=49):
 
 # --- 新增：進階與複合 AI 策略函數 ---
 
-def strategy_short_term_momentum(df, pool_size=38, recent_draws=50):
+def strategy_short_term_momentum(df, pool_size=49, recent_draws=50):
     """📈 近期動能加權：給予越近期的開獎號碼越高權重，捕捉短線熱潮"""
     if df.empty:
         return sorted(random.sample(range(1, pool_size + 1), 6))
@@ -89,7 +89,7 @@ def strategy_short_term_momentum(df, pool_size=38, recent_draws=50):
     return sorted(best_picks)
 
 
-def strategy_zone_elimination(df, pool_size=38):
+def strategy_zone_elimination(df, pool_size=49):
     """🕳️ 斷區殺牌法：隨機強制排除一個區段(例如 11~20)，從剩餘號碼挑選"""
     # 建立 10 號為一個單位的區段清單
     zones = []
@@ -111,7 +111,7 @@ def strategy_zone_elimination(df, pool_size=38):
     return sorted(picks)
 
 
-def strategy_composite_ai(df, pool_size=38):
+def strategy_composite_ai(df, pool_size=49):
     """🧠 綜合 AI 複合權重：融合熱門、冷門、拖牌、連莊的多因子評分模型"""
     if df.empty:
         return sorted(random.sample(range(1, pool_size + 1), 6))
@@ -163,7 +163,7 @@ def strategy_composite_ai(df, pool_size=38):
     return sorted(best_picks)
 
 
-def strategy_absolute_cold(df, pool_size=38):
+def strategy_absolute_cold(df, pool_size=49):
     """❄️ 絕對冷門：反向操作，專門挑選歷史上開出最少次的號碼"""
     if df.empty:
         return sorted(random.sample(range(1, pool_size + 1), 6))
@@ -238,8 +238,8 @@ def fetch_super_lotto_data(year, month):
         data = response.json()
         
         monthly_draws = []
-        if 'content' in data and data['content'] and 'superLotto638Res' in data['content']:
-            for item in data['content']['superLotto638Res']:
+        if 'content' in data and data['content'] and 'super_superLotto638Res' in data['content']:
+            for item in data['content']['super_superLotto638Res']:
                 draw_no = item['period']
                 date_str = item['lotteryDate'].split('T')[0]
                 date_parts = date_str.split('-')
@@ -348,26 +348,26 @@ if not full_df.empty:
         hot_6 = sorted([x[0] for x in freq.most_common(6)])
         
         # 2. 絕地反彈
-        max_om_6 = strategy_max_omission(full_df, pool_size=38)
+        max_om_6 = strategy_max_omission(full_df, pool_size=49)
         
         # 3. 上期拖牌
-        trail_6 = strategy_trailing_numbers(full_df, pool_size=38)
+        trail_6 = strategy_trailing_numbers(full_df, pool_size=49)
         
         # 4. 完美統計學
-        gold_6 = strategy_golden_ratio(pool_size=38, min_sum=95, max_sum=139)
+        gold_6 = strategy_golden_ratio(pool_size=49, min_sum=130, max_sum=170)
         
         # 5. 連號與連莊組合
-        pattern_6 = strategy_pattern_combo(full_df, pool_size=38)
+        pattern_6 = strategy_pattern_combo(full_df, pool_size=49)
         
         # ✨ 新增的 4 種策略：
         # 6. 近期動能加權
-        momentum_6 = strategy_short_term_momentum(full_df, pool_size=38, recent_draws=50)
+        momentum_6 = strategy_short_term_momentum(full_df, pool_size=49, recent_draws=50)
         # 7. 斷區殺牌法
-        zone_6 = strategy_zone_elimination(full_df, pool_size=38)
+        zone_6 = strategy_zone_elimination(full_df, pool_size=49)
         # 8. 綜合 AI 複合權重
-        composite_6 = strategy_composite_ai(full_df, pool_size=38)
+        composite_6 = strategy_composite_ai(full_df, pool_size=49)
         # 9. 絕對冷門
-        cold_6 = strategy_absolute_cold(full_df, pool_size=38)
+        cold_6 = strategy_absolute_cold(full_df, pool_size=49)
 
         # 產生特別號 (從前 5 大熱門中隨機挑選)
         special_pool = [n for n, c in Counter(full_df['特別號']).most_common(5)]
@@ -389,7 +389,7 @@ if not full_df.empty:
         
         # --- 前期預測 (基於扣除最新一期的歷史) ---
         last_draw_id = str(full_df.iloc[0]['期別'])
-        cache_key = f"prev_preds_super_{last_draw_id}"
+        cache_key = f"prev_preds_super_lotto_{last_draw_id}"
         
         if cache_key in st.session_state:
             prev_preds = st.session_state[cache_key]
@@ -399,14 +399,14 @@ if not full_df.empty:
                 prev_all_nums_flat = prev_df[['N1', 'N2', 'N3', 'N4', 'N5', 'N6']].values.flatten()
                 prev_freq = Counter(prev_all_nums_flat)
                 prev_hot_6 = sorted([x[0] for x in prev_freq.most_common(6)])
-                prev_max_om_6 = strategy_max_omission(prev_df, pool_size=38)
-                prev_trail_6 = strategy_trailing_numbers(prev_df, pool_size=38)
-                prev_gold_6 = strategy_golden_ratio(pool_size=38, min_sum=95, max_sum=139)
-                prev_pattern_6 = strategy_pattern_combo(prev_df, pool_size=38)
-                prev_momentum_6 = strategy_short_term_momentum(prev_df, pool_size=38, recent_draws=50)
-                prev_zone_6 = strategy_zone_elimination(prev_df, pool_size=38)
-                prev_composite_6 = strategy_composite_ai(prev_df, pool_size=38)
-                prev_cold_6 = strategy_absolute_cold(prev_df, pool_size=38)
+                prev_max_om_6 = strategy_max_omission(prev_df, pool_size=49)
+                prev_trail_6 = strategy_trailing_numbers(prev_df, pool_size=49)
+                prev_gold_6 = strategy_golden_ratio(pool_size=49, min_sum=130, max_sum=170)
+                prev_pattern_6 = strategy_pattern_combo(prev_df, pool_size=49)
+                prev_momentum_6 = strategy_short_term_momentum(prev_df, pool_size=49, recent_draws=50)
+                prev_zone_6 = strategy_zone_elimination(prev_df, pool_size=49)
+                prev_composite_6 = strategy_composite_ai(prev_df, pool_size=49)
+                prev_cold_6 = strategy_absolute_cold(prev_df, pool_size=49)
                 
                 prev_special_pool = [n for n, c in Counter(prev_df['特別號']).most_common(5)] or list(range(1, 9))
                 
@@ -449,21 +449,18 @@ if not full_df.empty:
             
             # 針對『前期預測』計算是否中獎 (對比上一期實際開獎號碼)
             my_nums = set(p_p[0:6])
-            my_special = p_p[6]
             match_count = len(my_nums.intersection(draw_nums))
-            match_special = (my_special == special_num)
+            match_special = special_num in my_nums
             
             prize = 0
-            if match_count == 6 and match_special: prize = 200000000
-            elif match_count == 6: prize = 10000000
-            elif match_count == 5 and match_special: prize = 150000
-            elif match_count == 5: prize = 20000
-            elif match_count == 4 and match_special: prize = 4000
-            elif match_count == 4: prize = 800
-            elif match_count == 3 and match_special: prize = 400
-            elif match_count == 2 and match_special: prize = 200
-            elif match_count == 3: prize = 100
-            elif match_count == 1 and match_special: prize = 100
+            if match_count == 6: prize = 100000000
+            elif match_count == 5 and match_special: prize = 2000000
+            elif match_count == 5: prize = 60000
+            elif match_count == 4 and match_special: prize = 15000
+            elif match_count == 4: prize = 2000
+            elif match_count == 3 and match_special: prize = 1000
+            elif match_count == 2 and match_special: prize = 400
+            elif match_count == 3: prize = 400
             
             prize_str = f"＄{prize:,}" if prize > 0 else "＄0"
             
@@ -544,10 +541,10 @@ if not full_df.empty:
                     removable = [n for n in check_nums if n not in high_gap_nums_top]
                     
                     # 微調邏輯：替換 1 顆極端偏差號碼
-                    if sum_val < 95 and removable:
+                    if sum_val < 120 and removable:
                         removable.sort()
                         rec_nums.remove(removable[0])
-                    elif sum_val > 139 and removable:
+                    elif sum_val > 180 and removable:
                         removable.sort()
                         rec_nums.remove(removable[-1])
                     elif removable:
@@ -558,7 +555,7 @@ if not full_df.empty:
                     while len(rec_nums) < 6:
                         current_sum = sum(rec_nums)
                         needed = 6 - len(rec_nums)
-                        avg_needed = (117 - current_sum) / needed if needed > 0 else 25
+                        avg_needed = (117 - current_sum) / needed if needed > 0 else 19
                         
                         best_candidate = None
                         best_diff = 999
@@ -635,6 +632,10 @@ if not full_df.empty:
                 '血': [8, 18, 28], '骨頭': [4, 14], '大便': [14, 18, 24], '尿尿': [6, 16],
                 '眼淚': [6, 16], '流汗': [8, 18], '生病': [4, 14], '受傷': [4, 14],
 
+                # --- 【衛浴設備類】 ---
+                '廁所': [12, 22], '洗手間': [12, 22], '馬桶': [7, 17, 37],
+                '馬桶蓋': [8, 18, 38], '衛生紙': [4, 14],
+
                 # --- 【物品與人造物類】 ---
                 '錢': [7, 8, 11], '硬幣': [8, 18], '鈔票': [7, 17, 27], '鑽石': [9, 29],
                 '珠寶': [8, 18], '戒指': [10, 20], '項鍊': [0, 20], '手錶': [3, 13],
@@ -669,17 +670,46 @@ if not full_df.empty:
                 '青菜': [3, 13], '水果': [4, 14], '蘋果': [1, 11], '香蕉': [2, 12],
                 '葡萄': [8, 18], '西瓜': [4, 14], '橘子': [7, 17], '雞蛋': [0, 10, 20],
                 '麵包': [8, 18], '蛋糕': [8, 18, 28], '糖果': [7, 17], '咖啡': [9, 19],
-                '茶': [7, 17], '樹葉': [4, 14], '竹子': [1, 11], '蓮花': [6, 16]
+                '茶': [7, 17], '樹葉': [4, 14], '竹子': [1, 11], '蓮花': [6, 16],
+
+                # --- 【新聞實例與大獎得主夢境】 ---
+                '兩座山': [23],
+                '吃餿水': [4, 14, 24],
+                '被砍': [8, 18],
+                '見血': [8, 18, 28],
+                '失火': [7, 17, 47],
+                '被火燒': [7, 17, 47],
+                '拉肚子': [6, 16, 26],
+                '一直刷牙': [1, 11, 21],
+                '刷牙': [1, 11, 21],
+                '爆炸': [8, 18, 48],
+                '兔子跳坑': [4, 24],
+                
+                # --- 【現代生活與特殊情境】 ---
+                '刮刮樂': [8, 18],
+                '彩券行': [8, 38],
+                '中頭獎': [1, 8, 18, 38],
+                '外送員': [5, 15],
+                '確診': [19, 22],
+                '感冒': [9, 19],
+                '口罩': [3, 13],
+                '疫苗': [1, 11],
+                '打針': [1, 11],
+                '數字零': [10, 20, 30],
+                '數字四': [4, 14, 24, 34],
+                '數字八': [8, 18, 28, 38]
             }
             if not top_dream_text:
                 st.warning("還沒輸入夢境啦！")
             else:
                 dream_nums = set()
                 matched_keywords = []
-                for keyword, nums in dream_dict.items():
-                    if keyword in top_dream_text:
-                        dream_nums.update(nums)
-                        matched_keywords.append(keyword)
+                sorted_keys = sorted(dream_dict.keys(), key=len, reverse=True)
+                for k in sorted_keys:
+                    if k in top_dream_text:
+                        if not any(k in found for found in matched_keywords):
+                            dream_nums.update(dream_dict[k])
+                            matched_keywords.append(k)
                 
                 dream_nums = list({n for n in dream_nums if 1 <= n <= 38})
                 
@@ -802,7 +832,7 @@ if not full_df.empty:
             if sn not in found_special:
                 found_special.add(sn)
                 
-            for n in range(1, 9):
+            for n in range(1, 39):
                 if n not in found_special:
                     special_missing[n] += 1
                     
@@ -864,82 +894,81 @@ if not full_df.empty:
         
         dream_text = st.text_area("請簡述昨晚的夢境 (例如：夢到被一條大蛇追，還看到很多水)")
         
-        # 🌟 豪華擴充版：台灣民間樂透解夢與逼牌大辭典 (超過 250+ 關鍵字)
+        # 豪華版：擴充民間常見解夢字典
         dream_dict = {
-            # --- 【動物與昆蟲類】 ---
-            '老鼠': [1, 5], '牛': [2, 21, 22], '老虎': [3, 23, 33], '兔子': [4, 24],
+            # 動物類
+            '老鼠': [1, 5], '牛': [2, 22], '老虎': [3, 23, 33], '兔子': [4, 24],
             '龍': [5, 16, 49], '蛇': [6, 36], '馬': [7, 27], '羊': [8, 28],
             '猴': [9, 29], '雞': [10, 30], '狗': [9, 11, 33], '豬': [12, 43],
-            '貓': [12, 17, 18, 19], '鳥': [22, 43], '魚': [17, 37], '烏龜': [8, 18, 28],
-            '螞蟻': [4, 24], '蟑螂': [2, 12, 28], '蚊子': [3, 23], '蜘蛛': [4, 14, 34],
-            '蒼蠅': [3, 23], '蜜蜂': [8, 18], '蝴蝶': [3, 13], '蜈蚣': [35],
-            '青蛙': [6, 26, 36], '鴿子': [9, 19], '鴨子': [8, 28], '鵝': [9, 29],
-            '獅子': [4, 14, 44], '熊': [5, 25], '大象': [11, 21], '豹': [3, 23],
-            '蝦子': [9, 19], '螃蟹': [8, 18], '蝙蝠': [5, 15], '孔雀': [7, 17],
+            '貓': [12, 17, 18], '鳥': [22, 43], '魚': [17, 37], '烏龜': [8, 18],
+            '螞蟻': [4, 24], '蟑螂': [2, 12], '蚊子': [3, 23], '蜘蛛': [4, 14],
+            '熊': [5, 25], '青蛙': [6, 26], '鴨子': [8, 28], '鵝': [9, 29],
+            
+            # 人物與關係
+            '爸爸': [8, 9, 22, 40], '父親': [8, 9, 22, 40], '媽媽': [15, 18], '母親': [15, 18],
+            '小孩': [4, 24], '老人': [9, 39], '警察': [11], '小偷': [13], '強盜': [13],
+            '醫生': [14], '朋友': [10, 11], '嬰兒': [1], '孕婦': [1, 21],
+            '老師': [2, 12], '軍人': [3, 13], '老闆': [8, 18], '同事': [6, 16],
+            '情人': [7, 17], '外國人': [4, 14], '親戚': [5, 15], '兄弟': [2, 12],
+            '姊妹': [3, 13], '前男友': [7, 27], '前女友': [7, 27],
+            
+            # 自然與環境
+            '水': [8, 10, 11], '火': [7, 47], '海': [20, 28], '山': [3, 23],
+            '樹': [4, 14], '太陽': [1, 10], '月亮': [2, 12], '星星': [7, 17],
+            '下雨': [6, 16], '地震': [7, 27], '颱風': [8, 28], '淹水': [8, 18],
+            '雲': [5, 15], '風': [4, 14], '雪': [9, 19], '花': [6, 16],
+            '草': [3, 13], '石頭': [4, 14], '泥土': [5, 15], '森林': [4, 24],
+            
+            # 物品與物件
+            '錢': [7, 8, 11], '血': [8, 18], '棺材': [4, 44], '刀': [7, 17],
+            '槍': [11, 21], '鞋子': [12, 22], '衣服': [5, 15], '車子': [4, 14, 24],
+            '火車': [9, 29], '飛機': [2], '船': [2, 12], '腳踏車': [2, 12],
+            '手機': [1, 11], '電腦': [4, 14], '手錶': [3, 13], '眼鏡': [2, 12],
+            '帽子': [1, 11], '戒指': [10, 20], '項鍊': [0, 20], '黃金': [8, 28],
+            '鑽石': [9, 29], '鑰匙': [7, 17], '剪刀': [2, 12], '傘': [3, 13],
+            '床': [4, 14], '椅子': [1, 11], '桌子': [4, 14], '書': [4, 14],
+            '筆': [1, 11], '紙': [4, 14], '照片': [5, 15], '電視': [4, 14],
+            
+            # 衛浴設備類
+            '廁所': [12, 22], '洗手間': [12, 22], '馬桶': [7, 17, 37],
+            '馬桶蓋': [8, 18, 38], '衛生紙': [4, 14], '尿尿': [6, 16],
+            
+            # 事件與動作
+            '大便': [14, 18, 24], '車禍': [4, 14, 24], '結婚': [1, 26, 27, 44],
+            '生小孩': [1, 21], '死': [4, 14, 44], '發財': [18, 38], '飛': [2, 11],
+            '開車': [8, 18], '洗澡': [6, 16], '吃飯': [10, 20], '喝酒': [9, 19],
+            '跑步': [5, 15], '哭': [4, 14], '笑': [7, 17], '拜拜': [8, 18, 48],
+            '神明': [9, 29, 39], '祖先': [1, 11], '鬼': [14, 19], '被追': [5, 15],
+            '吵架': [2, 12], '打架': [3, 13], '跌倒': [4, 14], '迷路': [6, 16],
+            '考試': [7, 17], '中獎': [8, 18], '掉牙齒': [1, 11], '流血': [8, 18],
+            '火災': [7, 17], '跳水': [8, 18], '游泳': [8, 18], '釣魚': [17, 37],
 
-            # --- 【人物與親屬關係類】 ---
-            '阿公': [1, 9, 39], '阿嬤': [1, 9, 39], '爸爸': [8, 9, 18, 22, 40], '父親': [8, 9, 18, 22],
-            '媽媽': [15, 18], '母親': [15, 18], '兄弟': [2, 12], '姊妹': [3, 13],
-            '嬰兒': [1, 11], '小孩': [4, 24], '老人': [9, 39], '孕婦': [1, 21],
-            '老師': [2, 12, 24], '學生': [3, 13], '警察': [11, 17], '小偷': [13, 23],
-            '強盜': [13], '醫生': [14, 24], '護士': [4, 14], '老闆': [8, 18],
-            '同事': [6, 16], '情人': [7, 17], '朋友': [10, 11], '外國人': [4, 14, 24],
-            '乞丐': [5, 15], '和尚': [6, 16], '尼姑': [6, 16], '總統': [1, 9, 19],
-            '明星': [8, 18], '神明': [9, 29, 39], '祖先': [1, 11, 21], '鬼': [14, 19],
-            '外星人': [11, 44], '前男友': [7, 27], '前女友': [7, 27], '小三': [3, 13],
-
-            # --- 【大自然與環境類】 ---
-            '水': [8, 10, 11], '火': [7, 47], '山': [3, 23], '石頭': [4, 14],
-            '木頭': [4, 14], '花': [6, 16], '草': [3, 13], '樹木': [4, 14, 24],
-            '泥土': [5, 15], '黃金': [8, 28], '太陽': [1, 10], '月亮': [2, 12],
-            '星星': [7, 17], '雲': [5, 15], '風': [4, 14], '下雨': [6, 16],
-            '雪': [9, 19], '閃電': [7, 27], '打雷': [7, 27], '地震': [7, 27, 47],
-            '颱風': [8, 28], '淹水': [8, 18, 38], '海': [20, 28], '河流': [10, 20],
-            '湖泊': [10, 20], '水井': [9, 19], '森林': [4, 24], '懸崖': [7, 17],
-
-            # --- 【身體部位與生理現象類】 ---
-            '頭': [1, 10], '頭髮': [8, 18], '臉': [2, 12], '眼睛': [2, 12, 22],
-            '耳朵': [2, 12], '鼻子': [1, 11], '嘴巴': [1, 11], '牙齒': [1, 11, 21],
-            '舌頭': [7, 17], '脖子': [9, 19], '手': [5, 15], '手指': [5, 10],
-            '腳': [7, 17], '腿': [7, 17], '肚子': [8, 18], '心臟': [3, 13],
-            '血': [8, 18, 28], '骨頭': [4, 14], '大便': [14, 18, 24], '尿尿': [6, 16],
-            '眼淚': [6, 16], '流汗': [8, 18], '生病': [4, 14], '受傷': [4, 14],
-
-            # --- 【物品與人造物類】 ---
-            '錢': [7, 8, 11], '硬幣': [8, 18], '鈔票': [7, 17, 27], '鑽石': [9, 29],
-            '珠寶': [8, 18], '戒指': [10, 20], '項鍊': [0, 20], '手錶': [3, 13],
-            '衣服': [5, 15], '褲子': [2, 12], '鞋子': [12, 22], '帽子': [1, 11],
-            '雨傘': [3, 13], '包包': [5, 15], '書本': [4, 14], '筆': [1, 11],
-            '紙': [4, 14], '信件': [4, 14], '電話': [4, 14, 34], '手機': [1, 11, 31],
-            '電腦': [4, 14, 24], '電視': [4, 14, 44], '鏡子': [2, 12], '照片': [5, 15],
-            '刀子': [7, 17], '剪刀': [2, 12], '槍': [11, 21], '劍': [7, 17],
-            '鑰匙': [7, 17], '鎖': [4, 14], '門': [4, 14], '窗戶': [4, 14],
-            '床': [4, 14], '桌子': [4, 14], '椅子': [1, 11], '杯子': [8, 18],
-            '碗': [8, 18], '筷子': [2, 11], '棺材': [4, 14, 44], '墓碑': [4, 14],
-            '汽車': [4, 14, 24], '腳踏車': [2, 12], '機車': [7, 17], '火車': [9, 29],
-            '飛機': [2, 22], '船': [2, 12], '房子': [8, 18], '大樓': [9, 19, 39],
-            '橋': [7, 17], '馬路': [6, 16], '網子': [5, 15], '高鐵': [7, 27],
-            '捷運': [2, 12], '輪椅': [4, 14],
-
-            # --- 【事件、動作與情境類】 ---
-            '飛': [2, 11], '跑步': [5, 15], '走路': [6, 16], '游泳': [8, 18],
-            '跳躍': [7, 17], '跌倒': [4, 14], '爬山': [3, 23], '洗澡': [6, 16, 26],
-            '睡覺': [4, 14], '吃飯': [10, 20], '喝酒': [9, 19], '抽菸': [1, 11],
-            '唱歌': [7, 17], '跳舞': [8, 18], '哭泣': [4, 14], '大笑': [7, 17],
-            '吵架': [2, 12, 22], '打架': [3, 13], '殺人': [4, 14, 44], '死亡': [4, 14, 44],
-            '流血': [8, 18], '車禍': [4, 14, 24], '火災': [7, 17, 47], '中獎': [8, 18, 38],
-            '發財': [18, 38], '破財': [4, 14], '迷路': [6, 16], '考試': [7, 17],
-            '畢業': [8, 18], '結婚': [1, 26, 27, 44], '離婚': [2, 12], '生小孩': [1, 21],
-            '懷孕': [1, 21], '拜拜': [8, 18, 48], '祭祖': [1, 11], '被追': [5, 15],
-            '抓魚': [17, 37], '找東西': [7, 17], '搬家': [8, 18], '旅遊': [6, 16],
-            '上班': [8, 18], '遲到': [4, 14], '被狗咬': [9, 19], '掉牙齒': [1, 11, 21],
-
-            # --- 【食物與植物類】 ---
-            '白米': [8, 18], '麵條': [5, 15], '豬肉': [6, 16], '魚肉': [17, 37],
-            '青菜': [3, 13], '水果': [4, 14], '蘋果': [1, 11], '香蕉': [2, 12],
-            '葡萄': [8, 18], '西瓜': [4, 14], '橘子': [7, 17], '雞蛋': [0, 10, 20],
-            '麵包': [8, 18], '蛋糕': [8, 18, 28], '糖果': [7, 17], '咖啡': [9, 19],
-            '茶': [7, 17], '樹葉': [4, 14], '竹子': [1, 11], '蓮花': [6, 16]
+            # --- 【新聞實例與大獎得主夢境】 ---
+            '兩座山': [23],
+            '吃餿水': [4, 14, 24],
+            '被砍': [8, 18],
+            '見血': [8, 18, 28],
+            '失火': [7, 17, 47],
+            '被火燒': [7, 17, 47],
+            '拉肚子': [6, 16, 26],
+            '一直刷牙': [1, 11, 21],
+            '刷牙': [1, 11, 21],
+            '爆炸': [8, 18, 48],
+            '兔子跳坑': [4, 24],
+            
+            # --- 【現代生活與特殊情境】 ---
+            '刮刮樂': [8, 18],
+            '彩券行': [8, 38],
+            '中頭獎': [1, 8, 18, 38],
+            '外送員': [5, 15],
+            '確診': [19, 22],
+            '感冒': [9, 19],
+            '口罩': [3, 13],
+            '疫苗': [1, 11],
+            '打針': [1, 11],
+            '數字零': [10, 20, 30],
+            '數字四': [4, 14, 24, 34],
+            '數字八': [8, 18, 28, 38]
         }
         
         if st.button("🔮 解析夢境並產生號碼"):
@@ -949,10 +978,12 @@ if not full_df.empty:
                 # 1. 萃取夢境號碼
                 dream_nums = set()
                 matched_keywords = []
-                for keyword, nums in dream_dict.items():
-                    if keyword in dream_text:
-                        dream_nums.update(nums)
-                        matched_keywords.append(keyword)
+                sorted_keys = sorted(dream_dict.keys(), key=len, reverse=True)
+                for k in sorted_keys:
+                    if k in dream_text:
+                        if not any(k in found for found in matched_keywords):
+                            dream_nums.update(dream_dict[k])
+                            matched_keywords.append(k)
                 
                 dream_nums = list({n for n in dream_nums if 1 <= n <= 38})
                 
@@ -1258,7 +1289,7 @@ if not full_df.empty:
                             while len(rec_nums) < 6:
                                 current_sum = sum(rec_nums)
                                 needed = 6 - len(rec_nums)
-                                target_sum = 117
+                                target_sum = 150
                                 avg_needed = (target_sum - current_sum) / needed if needed > 0 else 19
                                 
                                 best_candidate = None

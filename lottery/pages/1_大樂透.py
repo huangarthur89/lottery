@@ -372,7 +372,7 @@ if not full_df.empty:
         # 產生特別號 (從前 5 大熱門中隨機挑選)
         special_pool = [n for n, c in Counter(full_df['特別號']).most_common(5)]
         if not special_pool:
-            special_pool = list(range(1, 9)) # Fallback
+            special_pool = list(range(1, 50)) # Fallback
             
         # --- 本期預測 (基於完整歷史) ---
         curr_preds = [
@@ -408,7 +408,7 @@ if not full_df.empty:
                 prev_composite_6 = strategy_composite_ai(prev_df, pool_size=49)
                 prev_cold_6 = strategy_absolute_cold(prev_df, pool_size=49)
                 
-                prev_special_pool = [n for n, c in Counter(prev_df['特別號']).most_common(5)] or list(range(1, 9))
+                prev_special_pool = [n for n, c in Counter(prev_df['特別號']).most_common(5)] or list(range(1, 50))
                 
                 prev_preds = [
                     [*prev_hot_6, random.choice(prev_special_pool)],
@@ -632,6 +632,10 @@ if not full_df.empty:
                 '血': [8, 18, 28], '骨頭': [4, 14], '大便': [14, 18, 24], '尿尿': [6, 16],
                 '眼淚': [6, 16], '流汗': [8, 18], '生病': [4, 14], '受傷': [4, 14],
 
+                # --- 【衛浴設備類】 ---
+                '廁所': [12, 22], '洗手間': [12, 22], '馬桶': [7, 17, 37],
+                '馬桶蓋': [8, 18, 38], '衛生紙': [4, 14],
+
                 # --- 【物品與人造物類】 ---
                 '錢': [7, 8, 11], '硬幣': [8, 18], '鈔票': [7, 17, 27], '鑽石': [9, 29],
                 '珠寶': [8, 18], '戒指': [10, 20], '項鍊': [0, 20], '手錶': [3, 13],
@@ -666,17 +670,46 @@ if not full_df.empty:
                 '青菜': [3, 13], '水果': [4, 14], '蘋果': [1, 11], '香蕉': [2, 12],
                 '葡萄': [8, 18], '西瓜': [4, 14], '橘子': [7, 17], '雞蛋': [0, 10, 20],
                 '麵包': [8, 18], '蛋糕': [8, 18, 28], '糖果': [7, 17], '咖啡': [9, 19],
-                '茶': [7, 17], '樹葉': [4, 14], '竹子': [1, 11], '蓮花': [6, 16]
+                '茶': [7, 17], '樹葉': [4, 14], '竹子': [1, 11], '蓮花': [6, 16],
+
+                # --- 【新聞實例與大獎得主夢境】 ---
+                '兩座山': [23],
+                '吃餿水': [4, 14, 24],
+                '被砍': [8, 18],
+                '見血': [8, 18, 28],
+                '失火': [7, 17, 47],
+                '被火燒': [7, 17, 47],
+                '拉肚子': [6, 16, 26],
+                '一直刷牙': [1, 11, 21],
+                '刷牙': [1, 11, 21],
+                '爆炸': [8, 18, 48],
+                '兔子跳坑': [4, 24],
+                
+                # --- 【現代生活與特殊情境】 ---
+                '刮刮樂': [8, 18],
+                '彩券行': [8, 38],
+                '中頭獎': [1, 8, 18, 38],
+                '外送員': [5, 15],
+                '確診': [19, 22],
+                '感冒': [9, 19],
+                '口罩': [3, 13],
+                '疫苗': [1, 11],
+                '打針': [1, 11],
+                '數字零': [10, 20, 30],
+                '數字四': [4, 14, 24, 34],
+                '數字八': [8, 18, 28, 38]
             }
             if not top_dream_text:
                 st.warning("還沒輸入夢境啦！")
             else:
                 dream_nums = set()
                 matched_keywords = []
-                for keyword, nums in dream_dict.items():
-                    if keyword in top_dream_text:
-                        dream_nums.update(nums)
-                        matched_keywords.append(keyword)
+                sorted_keys = sorted(dream_dict.keys(), key=len, reverse=True)
+                for k in sorted_keys:
+                    if k in top_dream_text:
+                        if not any(k in found for found in matched_keywords):
+                            dream_nums.update(dream_dict[k])
+                            matched_keywords.append(k)
                 
                 dream_nums = list({n for n in dream_nums if 1 <= n <= 49})
                 
@@ -896,6 +929,10 @@ if not full_df.empty:
             '床': [4, 14], '椅子': [1, 11], '桌子': [4, 14], '書': [4, 14],
             '筆': [1, 11], '紙': [4, 14], '照片': [5, 15], '電視': [4, 14],
             
+            # 衛浴設備類
+            '廁所': [12, 22], '洗手間': [12, 22], '馬桶': [7, 17, 37],
+            '馬桶蓋': [8, 18, 38], '衛生紙': [4, 14], '尿尿': [6, 16],
+            
             # 事件與動作
             '大便': [14, 18, 24], '車禍': [4, 14, 24], '結婚': [1, 26, 27, 44],
             '生小孩': [1, 21], '死': [4, 14, 44], '發財': [18, 38], '飛': [2, 11],
@@ -904,7 +941,34 @@ if not full_df.empty:
             '神明': [9, 29, 39], '祖先': [1, 11], '鬼': [14, 19], '被追': [5, 15],
             '吵架': [2, 12], '打架': [3, 13], '跌倒': [4, 14], '迷路': [6, 16],
             '考試': [7, 17], '中獎': [8, 18], '掉牙齒': [1, 11], '流血': [8, 18],
-            '火災': [7, 17], '跳水': [8, 18], '游泳': [8, 18], '釣魚': [17, 37]
+            '火災': [7, 17], '跳水': [8, 18], '游泳': [8, 18], '釣魚': [17, 37],
+
+            # --- 【新聞實例與大獎得主夢境】 ---
+            '兩座山': [23],
+            '吃餿水': [4, 14, 24],
+            '被砍': [8, 18],
+            '見血': [8, 18, 28],
+            '失火': [7, 17, 47],
+            '被火燒': [7, 17, 47],
+            '拉肚子': [6, 16, 26],
+            '一直刷牙': [1, 11, 21],
+            '刷牙': [1, 11, 21],
+            '爆炸': [8, 18, 48],
+            '兔子跳坑': [4, 24],
+            
+            # --- 【現代生活與特殊情境】 ---
+            '刮刮樂': [8, 18],
+            '彩券行': [8, 38],
+            '中頭獎': [1, 8, 18, 38],
+            '外送員': [5, 15],
+            '確診': [19, 22],
+            '感冒': [9, 19],
+            '口罩': [3, 13],
+            '疫苗': [1, 11],
+            '打針': [1, 11],
+            '數字零': [10, 20, 30],
+            '數字四': [4, 14, 24, 34],
+            '數字八': [8, 18, 28, 38]
         }
         
         if st.button("🔮 解析夢境並產生號碼"):
@@ -914,10 +978,12 @@ if not full_df.empty:
                 # 1. 萃取夢境號碼
                 dream_nums = set()
                 matched_keywords = []
-                for keyword, nums in dream_dict.items():
-                    if keyword in dream_text:
-                        dream_nums.update(nums)
-                        matched_keywords.append(keyword)
+                sorted_keys = sorted(dream_dict.keys(), key=len, reverse=True)
+                for k in sorted_keys:
+                    if k in dream_text:
+                        if not any(k in found for found in matched_keywords):
+                            dream_nums.update(dream_dict[k])
+                            matched_keywords.append(k)
                 
                 dream_nums = list({n for n in dream_nums if 1 <= n <= 49})
                 
