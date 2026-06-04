@@ -1,0 +1,56 @@
+import sys
+import os
+# 【究極路徑修復】確保能抓到外面的檔案
+current_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.dirname(current_dir)
+if root_dir not in sys.path:
+    sys.path.insert(0, root_dir)
+
+import streamlit as st
+import pandas as pd
+import numpy as np
+import plotly.express as px
+
+st.set_page_config(page_title="樂透大數據分析", layout="wide", initial_sidebar_state="expanded")
+
+if st.button("⬅ 返回整合首頁", use_container_width=False):
+    st.switch_page("app.py")
+
+st.markdown("<hr style='margin-top:5px; margin-bottom:20px;'>", unsafe_allow_html=True)
+
+st.title("📊 樂透歷史數據與冷熱趨勢分析")
+st.markdown("系統已成功掛載！以下為彩券歷史開獎號碼的大數據統計與視覺化呈現。")
+
+# 建立一個防崩潰的模擬資料庫機制
+@st.cache_data
+def get_lotto_data():
+    '''模擬讀取 lottery_data.db，如果你的真實 DB 壞了也保證不會當機'''
+    dates = pd.date_range(start='2024-01-01', periods=100, freq='W')
+    data = []
+    for d in dates:
+        nums = list(np.random.choice(range(1, 50), 6, replace=False))
+        data.append([d.strftime('%Y-%m-%d')] + sorted(nums))
+    return pd.DataFrame(data, columns=['開獎日期', 'N1', 'N2', 'N3', 'N4', 'N5', 'N6'])
+
+df = get_lotto_data()
+
+col1, col2 = st.columns([1, 2])
+with col1:
+    st.subheader("📝 近期開獎紀錄")
+    st.dataframe(df.tail(15).reset_index(drop=True), use_container_width=True)
+
+with col2:
+    st.subheader("🔥 歷史冷熱門號碼統計")
+    # 將所有號碼壓平計算頻率
+    all_numbers = df[['N1', 'N2', 'N3', 'N4', 'N5', 'N6']].values.flatten()
+    freq_s = pd.Series(all_numbers).value_counts().sort_index()
+    
+    fig = px.bar(
+        x=freq_s.index, y=freq_s.values, 
+        labels={'x': '樂透號碼', 'y': '歷史開出次數'},
+        color=freq_s.values, color_continuous_scale='Viridis'
+    )
+    fig.update_layout(xaxis=dict(dtick=1))
+    st.plotly_chart(fig, use_container_width=True)
+    
+st.info("💡 **系統提示：** 這是為您建立的安全隔離區。未來您可以將自己寫的真實爬蟲 SQLite 邏輯，逐步取代這個模擬函數，系統絕對不會因為路徑問題而崩潰了！")
