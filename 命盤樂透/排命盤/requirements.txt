@@ -1,5 +1,0 @@
-streamlit
-pytz
-lunar-python
-plotly
-pyswisseph
