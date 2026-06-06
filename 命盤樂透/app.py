@@ -1,7 +1,7 @@
 import streamlit as st
 
 # ==========================================
-# 1. 頁面基礎設定與全域路由 CSS (修正置中與放大)
+# 1. 頁面基礎設定與全域路由 CSS
 # ==========================================
 st.set_page_config(page_title="天機合參 · 命盤樂透整合系統", layout="wide", initial_sidebar_state="collapsed")
 
@@ -16,50 +16,53 @@ st.markdown("""
     .main-title { text-align: center; font-size: 42px; font-weight: 900; margin-top: 40px; margin-bottom: 10px; letter-spacing: 4px; background: -webkit-linear-gradient(45deg, #D4AF37, #FFF8DC); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .sub-title { text-align: center; font-size: 18px; color: #A0AEC0; margin-bottom: 50px; letter-spacing: 2px; }
     
-    /* === 究極 CSS 覆蓋：確保按鈕顏色與文字完美置中、放大 === */
-    div.stButton > button {
+    /* === 究極 CSS 覆蓋：確保按鈕滿版、文字放大置中 === */
+    /* 1. 確保按鈕本身夠大 */
+    div[data-testid="column"] button {
         width: 100% !important; 
         height: 220px !important; 
         border-radius: 16px !important; 
         border: none !important;
         transition: transform 0.3s ease, box-shadow 0.3s ease !important; 
         box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
-        
-        /* 核心修復：強制讓按鈕內的所有容器完美水平、垂直置中 */
+    }
+    
+    /* 2. 解決文字靠左問題：將內部容器轉為 Flex 置中 */
+    div[data-testid="column"] button div[data-testid="stMarkdownContainer"] {
         display: flex !important;
+        flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        text-align: center !important;
+        width: 100% !important;
+        height: 100% !important;
     }
-    
-    /* 深入按鈕內部的所有文字節點，強制純白、加粗、置中 */
-    div.stButton > button * {
+
+    /* 3. 強制所有文字變純白、置中 */
+    div[data-testid="column"] button * {
         color: #FFFFFF !important;
         text-align: center !important;
-        margin: 0 auto !important;
     }
     
-    /* 核心修復：極致放大標題與說明文字，並確保段落換行正常 */
-    div.stButton > button p { 
-        font-size: 24px !important; 
+    /* 4. 強制文字放大加粗 */
+    div[data-testid="column"] button p { 
+        font-size: 26px !important; 
         font-weight: 900 !important; 
-        color: #FFFFFF !important; 
         white-space: pre-wrap !important; 
-        line-height: 1.6 !important;
-        display: block !important;
-        width: 100% !important;
+        line-height: 1.6 !important; 
+        margin: 0 !important; 
     }
     
-    div.stButton > button:hover { transform: translateY(-5px) !important; box-shadow: 0 15px 40px rgba(0,0,0,0.8) !important; }
+    /* 滑鼠懸浮特效 */
+    div[data-testid="column"] button:hover { 
+        transform: translateY(-5px) !important; 
+        box-shadow: 0 15px 40px rgba(0,0,0,0.8) !important; 
+    }
 
-    /* 1. 命盤分析：紅金命理風 (左上) */
-    div[data-testid="column"]:nth-child(1) div:nth-child(1) div.stButton > button { background: linear-gradient(135deg, #4A0000 0%, #B8860B 100%) !important; border: 2px solid #D4AF37 !important; }
-    /* 2. 威力彩分析：橘金爆發風 (左下) */
-    div[data-testid="column"]:nth-child(1) div:nth-child(3) div.stButton > button { background: linear-gradient(135deg, #E65100 0%, #FFB300 100%) !important; border: 2px solid #FFE082 !important; }
-    /* 3. 大樂透分析：綠金統計風 (右上) */
-    div[data-testid="column"]:nth-child(2) div:nth-child(1) div.stButton > button { background: linear-gradient(135deg, #004d1a 0%, #6b8e23 100%) !important; border: 2px solid #A8E6CF !important; }
-    /* 4. 命盤 × 樂透合參：紫藍合參風 (右下) */
-    div[data-testid="column"]:nth-child(2) div:nth-child(3) div.stButton > button { background: linear-gradient(135deg, #1A237E 0%, #0D47A1 100%) !important; border: 2px solid #64B5F6 !important; }
+    /* 背景顏色設定 (透過元素順序精準綁定 4 個按鈕) */
+    div[data-testid="column"]:nth-of-type(1) div[data-testid="stVerticalBlock"] > div:nth-child(1) button { background: linear-gradient(135deg, #4A0000 0%, #B8860B 100%) !important; border: 2px solid #D4AF37 !important; }
+    div[data-testid="column"]:nth-of-type(1) div[data-testid="stVerticalBlock"] > div:nth-child(3) button { background: linear-gradient(135deg, #E65100 0%, #FFB300 100%) !important; border: 2px solid #FFE082 !important; }
+    div[data-testid="column"]:nth-of-type(2) div[data-testid="stVerticalBlock"] > div:nth-child(1) button { background: linear-gradient(135deg, #004d1a 0%, #6b8e23 100%) !important; border: 2px solid #A8E6CF !important; }
+    div[data-testid="column"]:nth-of-type(2) div[data-testid="stVerticalBlock"] > div:nth-child(3) button { background: linear-gradient(135deg, #1A237E 0%, #0D47A1 100%) !important; border: 2px solid #64B5F6 !important; }
     </style>
 """, unsafe_allow_html=True)
 
