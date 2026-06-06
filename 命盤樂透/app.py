@@ -16,8 +16,8 @@ st.markdown("""
     .main-title { text-align: center; font-size: 42px; font-weight: 900; margin-top: 40px; margin-bottom: 10px; letter-spacing: 4px; background: -webkit-linear-gradient(45deg, #D4AF37, #FFF8DC); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .sub-title { text-align: center; font-size: 18px; color: #A0AEC0; margin-bottom: 50px; letter-spacing: 2px; }
     
-    /* === 究極 CSS 覆蓋：確保按鈕滿版、文字放大置中 === */
-    /* 1. 確保按鈕本身夠大 */
+    /* === 究極 CSS 覆蓋：精準打擊，確保換行與置中 === */
+    /* 1. 按鈕主體外框 */
     div[data-testid="column"] button {
         width: 100% !important; 
         height: 220px !important; 
@@ -25,40 +25,36 @@ st.markdown("""
         border: none !important;
         transition: transform 0.3s ease, box-shadow 0.3s ease !important; 
         box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+        padding: 0 !important;
     }
     
-    /* 2. 解決文字靠左問題：將內部容器轉為 Flex 置中 */
+    /* 2. 確保按鈕內的文字容器滿版且置中 */
     div[data-testid="column"] button div[data-testid="stMarkdownContainer"] {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
         width: 100% !important;
-        height: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
     }
 
-    /* 3. 強制所有文字變純白、置中 */
-    div[data-testid="column"] button * {
-        color: #FFFFFF !important;
-        text-align: center !important;
-    }
-    
-    /* 4. 強制文字放大加粗 */
+    /* 3. 🎯 核心修復：精準鎖定文字段落，放大、白字、置中、保留換行 (\n) */
     div[data-testid="column"] button p { 
-        font-size: 26px !important; 
+        color: #FFFFFF !important;
+        font-size: 24px !important; 
         font-weight: 900 !important; 
-        white-space: pre-wrap !important; 
+        text-align: center !important;
+        white-space: pre-wrap !important; /* ★ 這是讓 \\n 成功換行的絕對關鍵 */
         line-height: 1.6 !important; 
-        margin: 0 !important; 
+        margin: 0 auto !important; 
+        width: 100% !important;
     }
     
-    /* 滑鼠懸浮特效 */
+    /* 4. 滑鼠懸浮特效 */
     div[data-testid="column"] button:hover { 
         transform: translateY(-5px) !important; 
         box-shadow: 0 15px 40px rgba(0,0,0,0.8) !important; 
     }
 
-    /* 背景顏色設定 (透過元素順序精準綁定 4 個按鈕) */
+    /* 5. 四大按鈕專屬漸層背景 (保留您已成功的完美版本) */
     div[data-testid="column"]:nth-of-type(1) div[data-testid="stVerticalBlock"] > div:nth-child(1) button { background: linear-gradient(135deg, #4A0000 0%, #B8860B 100%) !important; border: 2px solid #D4AF37 !important; }
     div[data-testid="column"]:nth-of-type(1) div[data-testid="stVerticalBlock"] > div:nth-child(3) button { background: linear-gradient(135deg, #E65100 0%, #FFB300 100%) !important; border: 2px solid #FFE082 !important; }
     div[data-testid="column"]:nth-of-type(2) div[data-testid="stVerticalBlock"] > div:nth-child(1) button { background: linear-gradient(135deg, #004d1a 0%, #6b8e23 100%) !important; border: 2px solid #A8E6CF !important; }
