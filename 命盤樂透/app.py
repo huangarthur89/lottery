@@ -74,6 +74,6 @@ with col2:
 
 with col3:
     if st.button("🌌 命盤 × 樂透合參\n\n五行靈數共振\n專屬高勝率策略", use_container_width=True):
-        st.switch_page("pages/3_命盤_樂透合參.py")
+        st.switch_page("pages/4_命盤_樂透合參.py")
 
 st.markdown("<div style='text-align:center; margin-top:80px; color:#666; font-size:12px;'>© 2026 STAR★START 整合決策引擎</div>", unsafe_allow_html=True)
