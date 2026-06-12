@@ -3,5 +3,5 @@ pandas
 requests
 lunar-python
 plotly
-pyswissep
+pyswisseph
 pytz
