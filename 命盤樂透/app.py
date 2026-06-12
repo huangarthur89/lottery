@@ -13,14 +13,14 @@ st.markdown("""
     [data-testid="collapsedControl"] { display: none; }
     header { visibility: hidden; }
     
-    .main-title { text-align: center; font-size: 42px; font-weight: 900; margin-top: 40px; margin-bottom: 10px; letter-spacing: 4px; background: -webkit-linear-gradient(45deg, #D4AF37, #FFF8DC); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .sub-title { text-align: center; font-size: 18px; color: #A0AEC0; margin-bottom: 50px; letter-spacing: 2px; }
+    .main-title { text-align: center; font-size: 42px; font-weight: 900; margin-top: 50px; margin-bottom: 10px; letter-spacing: 4px; background: -webkit-linear-gradient(45deg, #D4AF37, #FFF8DC); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .sub-title { text-align: center; font-size: 18px; color: #A0AEC0; margin-bottom: 60px; letter-spacing: 2px; }
     
     /* === 究極 CSS 覆蓋：徹底繞過 Streamlit 文字解析 === */
     /* 1. 設定按鈕主體外框 */
     div[data-testid="column"] button {
         width: 100% !important; 
-        height: 220px !important; 
+        height: 280px !important; 
         border-radius: 16px !important; 
         border: none !important;
         transition: transform 0.3s ease, box-shadow 0.3s ease !important; 
@@ -58,35 +58,36 @@ st.markdown("""
        5. 🎯 GitHub 開源級工法：利用 CSS 注入副標題與完美換行 
        ======================================================== */
 
-    /* 命盤分析 (左) */
+    /* 第 1 欄：命盤分析 (紅金命理風) */
     div[data-testid="column"]:nth-of-type(1) button { background: linear-gradient(135deg, #4A0000 0%, #B8860B 100%) !important; border: 2px solid #D4AF37 !important; }
     div[data-testid="column"]:nth-of-type(1) button p::after {
         content: "深究紫微八字\\A掌握靈魂軌跡";
-        white-space: pre-wrap; font-size: 16px !important; font-weight: 500 !important; margin-top: 12px; color: #EEEEEE; line-height: 1.5;
+        white-space: pre-wrap; font-size: 18px !important; font-weight: 500 !important; margin-top: 16px; color: #EEEEEE; line-height: 1.5;
     }
 
-    /* 樂透分析 (中) */
+    /* 第 2 欄：樂透分析 (綠金統計風) */
     div[data-testid="column"]:nth-of-type(2) button { background: linear-gradient(135deg, #004d1a 0%, #6b8e23 100%) !important; border: 2px solid #A8E6CF !important; }
     div[data-testid="column"]:nth-of-type(2) button p::after {
-        content: "歷史數據監測\\A雙區冷熱統計";
-        white-space: pre-wrap; font-size: 16px !important; font-weight: 500 !important; margin-top: 12px; color: #EEEEEE; line-height: 1.5;
+        content: "大數據監測\\A冷熱號碼統計";
+        white-space: pre-wrap; font-size: 18px !important; font-weight: 500 !important; margin-top: 16px; color: #EEEEEE; line-height: 1.5;
     }
 
-    /* 命盤 × 樂透合參 (右) */
+    /* 第 3 欄：命盤 × 樂透合參 (紫藍合參風) */
     div[data-testid="column"]:nth-of-type(3) button { background: linear-gradient(135deg, #1A237E 0%, #0D47A1 100%) !important; border: 2px solid #64B5F6 !important; }
     div[data-testid="column"]:nth-of-type(3) button p::after {
         content: "五行靈數共振\\A專屬高勝率策略";
-        white-space: pre-wrap; font-size: 16px !important; font-weight: 500 !important; margin-top: 12px; color: #EEEEEE; line-height: 1.5;
+        white-space: pre-wrap; font-size: 18px !important; font-weight: 500 !important; margin-top: 16px; color: #EEEEEE; line-height: 1.5;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 2. 首頁 UI 佈局 (3 欄網格)
+# 2. 首頁 UI 佈局 (3 欄式)
 # ==========================================
 st.markdown("<div class='main-title'>天機合參決策系統</div>", unsafe_allow_html=True)
 st.markdown("<div class='sub-title'>命理軌跡 × 數據統計 · 全方位人生與財富導航</div>", unsafe_allow_html=True)
 
+# 建立 3 個平行的欄位
 col1, col2, col3 = st.columns(3, gap="large")
 
 with col1:
@@ -99,6 +100,6 @@ with col2:
 
 with col3:
     if st.button("🌌 命盤 × 樂透合參", use_container_width=True):
-        st.switch_page("pages/4_命盤_樂透合參.py")
+        st.switch_page("pages/3_命盤_樂透合參.py")
 
-st.markdown("<div style='text-align:center; margin-top:60px; color:#666; font-size:12px;'>© 2026 STAR★START 整合決策引擎</div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align:center; margin-top:80px; color:#666; font-size:12px;'>© 2026 STAR★START 整合決策引擎</div>", unsafe_allow_html=True)
