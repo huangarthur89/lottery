@@ -1,7 +1,8 @@
 streamlit
 pandas
-requests
-lunar-python
 plotly
+lunar_python
 pyswisseph
-pytz
+requests
+beautifulsoup4
+lxml
