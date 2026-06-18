@@ -1,0 +1,9 @@
+streamlit
+pandas
+plotly
+lunar_python
+pyswisseph
+requests
+beautifulsoup4
+lxml
+pytz
