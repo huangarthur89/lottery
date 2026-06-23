@@ -10,7 +10,6 @@ jobs:
   fetch_and_update:
     runs-on: ubuntu-latest
     
-    # 給予機器人寫入倉庫的權限，才能成功 Push
     permissions:
       contents: write
 
@@ -18,7 +17,7 @@ jobs:
       - name: 📥 1. 取得最新程式碼 (Checkout)
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0 # 抓取完整歷史紀錄以便後續 commit
+          fetch-depth: 0 
           
       - name: 🐍 2. 設定 Python 環境
         uses: actions/setup-python@v4
@@ -28,12 +27,14 @@ jobs:
       - name: 📦 3. 安裝必要套件 (Dependencies)
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          # 確保 pandas 與 requests 被安裝 (若 requirements 沒有涵蓋)
+          # 進入資料夾安裝套件
+          if [ -f 命盤樂透/requirements.txt ]; then pip install -r 命盤樂透/requirements.txt; fi
           pip install pandas requests
 
       - name: 🚀 4. 執行爬蟲腳本抓取最新樂透資料
         run: |
+          # 告訴機器人先走進資料夾再執行
+          cd 命盤樂透
           python fetch_data.py
           
       - name: 💾 5. 將更新後的資料庫 Commit 並 Push 回倉庫
@@ -41,11 +42,11 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
-          # 檢查 lottery_data.db 是否有變更
-          if git diff --quiet lottery_data.db; then
+          # 指定檢查並上傳 命盤樂透 資料夾內的資料庫
+          if git diff --quiet 命盤樂透/lottery_data.db; then
             echo "✅ 今天沒有新的開獎資料，無需 Commit。"
           else
-            git add lottery_data.db
+            git add 命盤樂透/lottery_data.db
             git commit -m "🤖 自動更新樂透資料庫 [$(date +'%Y-%m-%d')]"
             git push
             echo "🎉 成功寫入新資料並 Push 至 GitHub 倉庫！"
